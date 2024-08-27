@@ -9,22 +9,27 @@ def create_inertial(mass=1.0):
     ET.SubElement(inertial, 'inertia', ixx="1.0", ixy="0.0", ixz="0.0", iyy="1.0", iyz="0.0", izz="1.0")
     return inertial
 
-def create_visual(name, length, radius, position, orientation):
+
+def create_geometry_and_origin(parent: ET.Element, geometry: ET.Element, radius: float, length: float) -> [ET.Element]:
+    cylinder = ET.SubElement(geometry, 'cylinder', radius=str(radius), length=str(length))
+    origin = ET.SubElement(parent, 'origin', xyz=f"0.0 0.0 0.0", rpy="0.0 0.0 0.0")
+    return cylinder, origin
+
+
+def create_visual(name, length, radius):
     visual = ET.Element('visual', name=f"{name}_visual")
     geometry = ET.SubElement(visual, 'geometry')
-    cylinder = ET.SubElement(geometry, 'cylinder', radius=str(radius), length=str(length))
-    origin = ET.SubElement(visual, 'origin', xyz=f"{position[0]} {position[1]} {position[2]}",
-                           rpy=f"{orientation[0]} {orientation[1]} {orientation[2]}")
-    material = ET.SubElement(visual, 'material', name="branch_material")
+    _, _ = create_geometry_and_origin(visual, geometry, radius, length)
+    _ = ET.SubElement(visual, 'material', name="branch_material")
     return visual
 
-def create_collision(name, length, radius, position, orientation):
+
+def create_collision(name, length, radius):
     collision = ET.Element('collision', name=f"{name}_collision")
     geometry = ET.SubElement(collision, 'geometry')
-    cylinder = ET.SubElement(geometry, 'cylinder', radius=str(radius), length=str(length))
-    origin = ET.SubElement(collision, 'origin', xyz=f"{position[0]} {position[1]} {position[2]}",
-                           rpy=f"{orientation[0]} {orientation[1]} {orientation[2]}")
+    _, _ = create_geometry_and_origin(collision, geometry, radius, length)
     return collision
+
 
 def create_link(name, length, radius, position, orientation):
     link = ET.Element('link', name=name)
@@ -33,6 +38,7 @@ def create_link(name, length, radius, position, orientation):
     link.append(create_collision(name, length, radius, position, orientation))
     return link
 
+
 def create_joint(name, parent, child, position, orientation):
     joint = ET.Element('joint', name=name, type="fixed")
     ET.SubElement(joint, 'parent', link=parent)
@@ -40,6 +46,7 @@ def create_joint(name, parent, child, position, orientation):
     ET.SubElement(joint, 'origin', xyz=f"{position[0]} {position[1]} {position[2]}",
                   rpy=f"{orientation[0]} {orientation[1]} {orientation[2]}")
     return joint
+
 
 def generate_random_tree_fixed_connection_with_altitude(
         robot,
@@ -115,6 +122,7 @@ def generate_random_tree_fixed_connection_with_altitude(
             branch_radius_range,
             altitude
         )
+
 
 def generate_tree_urdf_with_altitude(
         trunk_length,
