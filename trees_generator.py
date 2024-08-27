@@ -41,7 +41,19 @@ def create_joint(name, parent, child, position, orientation):
                   rpy=f"{orientation[0]} {orientation[1]} {orientation[2]}")
     return joint
 
-def generate_random_tree_fixed_connection_with_altitude(robot, parent_name, parent_length, base_position, base_orientation, level, max_depth, num_branches_range, branch_length_range, branch_radius_range, altitude):
+def generate_random_tree_fixed_connection_with_altitude(
+        robot,
+        parent_name,
+        parent_length,
+        base_position,
+        base_orientation,
+        level,
+        max_depth,
+        num_branches_range,
+        branch_length_range,
+        branch_radius_range,
+        altitude
+):
     """
     :param robot: The URDF XML tree to append to.
     :param parent_name: Name of the parent link (e.g., trunk or a branch).
@@ -90,9 +102,29 @@ def generate_random_tree_fixed_connection_with_altitude(robot, parent_name, pare
         joint = create_joint(joint_name, parent_name, branch_name, branch_position, branch_orientation)
         robot.append(joint)
 
-        generate_random_tree_fixed_connection_with_altitude(robot, branch_name, branch_length, branch_position, branch_orientation, level + 1, max_depth, num_branches_range, branch_length_range, branch_radius_range, altitude)
+        generate_random_tree_fixed_connection_with_altitude(
+            robot,
+            branch_name,
+            branch_length,
+            branch_position,
+            branch_orientation,
+            level + 1,
+            max_depth,
+            num_branches_range,
+            branch_length_range,
+            branch_radius_range,
+            altitude
+        )
 
-def generate_tree_urdf_with_altitude(trunk_length, trunk_radius, max_depth, num_branches_range, branch_length_range, branch_radius_range, altitude):
+def generate_tree_urdf_with_altitude(
+        trunk_length,
+        trunk_radius,
+        max_depth,
+        num_branches_range,
+        branch_length_range,
+        branch_radius_range,
+        altitude
+):
     robot = ET.Element('robot', name="tree_0.urdf")
 
     trunk_position = (0, 0, trunk_length / 2)
